@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Notes App</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: linear-gradient(135deg, #667eea, #764ba2);
+      color: white;
+      text-align: center;
+    }
+
+    header {
+      padding: 20px;
+      font-size: 24px;
+      font-weight: bold;
+    }
+
+    .container {
+      max-width: 800px;
+      margin: auto;
+      padding: 20px;
+    }
+
+    textarea {
+      width: 100%;
+      height: 100px;
+      border-radius: 10px;
+      border: none;
+      padding: 10px;
+      font-size: 16px;
+      resize: none;
+    }
+
+    button {
+      margin-top: 10px;
+      padding: 8px 15px;
+      border: none;
+      border-radius: 8px;
+      background: #22c55e;
+      color: white;
+      cursor: pointer;
+    }
+
+    .notes-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+      gap: 15px;
+      margin-top: 20px;
+    }
+
+    .note {
+      background: rgba(255,255,255,0.15);
+      backdrop-filter: blur(6px);
+      padding: 15px;
+      border-radius: 12px;
+      text-align: left;
+      position: relative;
+      color: white;
+    }
+
+    .delete-btn {
+      position: absolute;
+      top: 8px;
+      right: 10px;
+      cursor: pointer;
+      color: #ff4d4d;
+      font-weight: bold;
+    }
+
+  </style>
+</head>
+<body>
+
+<header>📝 My Notes App</header>
+
+<div class="container">
+
+  <textarea id="noteInput" placeholder="Write your note here..."></textarea>
+  <button onclick="addNote()">Add Note</button>
+
+  <div class="notes-grid" id="notesContainer"></div>
+
+</div>
+
+<script>
+
+let notes = JSON.parse(localStorage.getItem("notes")) || [];
+
+function saveNotes() {
+  localStorage.setItem("notes", JSON.stringify(notes));
+}
+
+function renderNotes() {
+  const container = document.getElementById("notesContainer");
+  container.innerHTML = "";
+
+  notes.forEach((note, index) => {
+    container.innerHTML += `
+      <div class="note">
+        <span class="delete-btn" onclick="deleteNote(${index})">✖</span>
+        <div contenteditable="true" oninput="editNote(${index}, this.innerText)">
+          ${note}
+        </div>
+      </div>
+    `;
+  });
+}
+
+function addNote() {
+  const input = document.getElementById("noteInput");
+  const text = input.value.trim();
+
+  if (!text) {
+    alert("Write something first!");
+    return;
+  }
+
+  notes.push(text);
+  saveNotes();
+  input.value = "";
+  renderNotes();
+}
+
+function deleteNote(index) {
+  notes.splice(index, 1);
+  saveNotes();
+  renderNotes();
+}
+
+function editNote(index, newText) {
+  notes[index] = newText;
+  saveNotes();
+}
+
+renderNotes();
+
+</script>
+
+</body>
+</html>
